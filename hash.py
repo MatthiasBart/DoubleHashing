@@ -91,10 +91,16 @@ class HashTable:
                 break
             # check if already exists 
             if self.table[hash].key == key: return -1
+            # check if next is free 
+            hash1 = (hash - self.hk2(key, self._m)) % self._m
+            if self.is_free(hash1):
+                self.set_key_value(hash1, key, value)
+                hash_end = hash1
+                break
             # check if can move the existed away
-            hash2 = (self.hk(self.table[hash].key, self._m) - 1 * self.hk2(self.table[hash].key, self._m)) % self._m
+            hash2 = (hash -  self.hk2(self.table[hash].key, self._m)) % self._m
             if self.is_free(hash2):
-                self.table[hash2] = self.table[hash]
+                self.set_key_value(hash2, self.table[hash].key, self.table[hash].value)
                 self.set_key_value(hash, key, value)
                 hash_end = hash
                 break
@@ -185,7 +191,7 @@ class HashTable:
         hash_end = -1
         for i in range(0, self._m):
             hash = (self.hk(k, self._m) - i * self.hk2(k, self._m)) % self._m 
-            if self.is_free(hash): return -1
+            if self.is_free(hash): continue
             if self.table[hash].key == k: hash_end = hash; break
         return hash_end
     # End implementation
